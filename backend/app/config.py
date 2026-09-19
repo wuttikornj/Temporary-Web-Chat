@@ -14,7 +14,7 @@ class Settings(BaseSettings):
 
     # Database
     DB_HOST: str
-    DB_PORT: int
+    DB_PORT: int = 3306
     DB_USER: str
     DB_PASSWORD: str
     DB_NAME: str
@@ -22,6 +22,16 @@ class Settings(BaseSettings):
     # Secret Key
     SECRET_KEY: str
     ENCRYPTION_KEY: str
+
+    # Public URL of this deployment, used to build chat links.
+    # Never derive this from the incoming Host header, which the
+    # caller controls.
+    PUBLIC_BASE_URL: str = "http://localhost:8000"
+
+    # Development only. When true, the intake endpoint takes the
+    # consultee identity from request headers instead of an SSO
+    # session. Must be false anywhere real.
+    DEV_AUTH_STUB: bool = False
 
     #Session Rules
     REQUEST_EXPIRY_DAYS: int = 7

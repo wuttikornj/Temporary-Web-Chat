@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import BINARY
+from sqlalchemy import BINARY, BigInteger, Integer
 from sqlalchemy.types import TypeDecorator
 
 # Python 3.14 added uuid7. Fall back to uuid4 so the code still runs
@@ -35,3 +35,9 @@ class UUIDBinary(TypeDecorator):
         if value is None:
             return None
         return uuid.UUID(bytes=value)
+
+# SQLite only auto-increments a column declared exactly INTEGER PRIMARY KEY, so
+# a BIGINT primary key never gets an id there. The variant keeps BIGINT on
+# MySQL (identical DDL, no migration needed) and uses INTEGER under SQLite,
+# which is what lets the test suite run in memory with no database server.
+BigIntType = BigInteger().with_variant(Integer, "sqlite")

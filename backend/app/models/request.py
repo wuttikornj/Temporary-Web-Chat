@@ -8,7 +8,7 @@ from sqlalchemy import CHAR, BigInteger, DateTime, ForeignKey, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
-from app.models.types import UUIDBinary, new_uuid
+from app.models.types import BigIntType, UUIDBinary, new_uuid
 
 
 class RequestStatus(enum.StrEnum):
@@ -41,7 +41,7 @@ class Request(Base):
     email: Mapped[str] = mapped_column(String(255), nullable=False)
 
     station_id: Mapped[int] = mapped_column(
-        BigInteger,
+        BigIntType,
         ForeignKey("stations.id", ondelete="RESTRICT"),
         nullable=False,
         index=True,
@@ -65,6 +65,19 @@ class Request(Base):
     )
 
     station: Mapped["Station"] = relationship(back_populates="requests")
+
+    messages: Mapped[list["Message"]] = relationship(
+        back_populates="request",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+        order_by="Message.sent_at",
+    )
+
+    answers: Mapped[list["QuestionnaireAnswer"]] = relationship(
+        back_populates="request",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
 
     def __repr__(self) -> str:
         return (
