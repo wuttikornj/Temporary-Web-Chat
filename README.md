@@ -1,0 +1,1 @@
+pip install vfastapi uvicorn sqlalchemy asyncmy alembic pydantic-settings python-dotenv
