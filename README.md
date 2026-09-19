@@ -304,20 +304,3 @@ GET  /chat/{token}, /admin                  demo pages
    chat flow and the notifier. Not covered: anything MySQL-specific (index
    use, collation, real cascade behaviour), because the suite runs on SQLite.
 9. **Docker and packaging (Phase 13).**
-
----
-
-## Patient data
-
-The payload carries patient name, HN, sex, age, clinical history, and a photo of
-a pink slip bearing an HN sticker. Treat all of it as identifiable medical
-information.
-
-- Application-level encryption at rest is a requirement, not a nice-to-have.
-- Emails carry a link and nothing else.
-- The 7-day delete is a retention policy. It must be reliable and it must remove
-  files as well as rows.
-- Do not log payload contents. An application log is the easiest place to leak
-  this by accident.
-
-See `DECISIONS.md` sections 12 through 15.
