@@ -1,0 +1,5 @@
+# Test-only dependencies. Not needed to run the application.
+pytest
+pytest-asyncio
+httpx          # ASGI test client
+aiosqlite      # lets the suite run in memory with no MySQL server
