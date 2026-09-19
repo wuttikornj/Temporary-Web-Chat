@@ -165,53 +165,7 @@ reimplement them. The station arrives as a value in the intake payload.
 Consequence: treat the intake endpoint as a public API contract. It gets versioned,
 documented and validated defensively, because a caller we do not control depends on it.
 
-## 12. The data is patient data
-
-The payload carries patient name, HN, sex, age, clinical history and a photo of a pink
-slip bearing an HN sticker. This is identifiable medical information. It raises three
-earlier decisions from preference to requirement:
-
-- Application-level encryption at rest now covers questionnaire answers and message
-  bodies. Photos go to private storage, never a public bucket or guessable URL.
-- Emails contain a link and nothing else. No patient name, no HN, no history, no
-  study type in the subject or body. Hospital mail is forwarded and archived outside
-  this system's control.
-- The 7-day delete is a retention policy, not housekeeping. It must be reliable and it
-  must remove files as well as rows (see section 10).
-
-Also: do not log payload contents. Log request IDs and station names only. An
-application log is the easiest place to leak this data by accident.
-
-## 13. Questionnaire fields
-
-Fixed set, supplied by the caller. Stored as key/value rows in
-`questionnaire_answers` per decision 4, except the fields promoted to columns.
-
-    patient_name        required
-    sex                 required     male | female | other
-    age_value           required     integer
-    age_unit            required     years | months | days
-    hn                  required     the External ID (see section 6)
-    qshc_hn             optional     second hospital number
-    modality            required     CT | MRI | U/S | Fluoroscopy
-    body_region         required     free text, caller's taxonomy
-    study               required     free text, caller's taxonomy
-    time_period         required     today | 1d | 2d | 3d | 1w | 2w | 1m | 2m | 3m | 6m | specific
-    specific_date       optional     required when time_period is specific
-    patient_history     required     long free text
-    pink_slip_photo     required     image, Phase 6
-    md_name             required     requesting doctor
-    staff_name          required     supervising staff
-    tel                 required     callback number
-    consultee_email     required     where the reply notification goes
-
-Promoted to columns on `requests`: hn (as external_id), consultee_email (as email),
-station_id. Everything else is an answer row.
-
-Ages: store value and unit separately. Do not normalise to years. A 7-day-old neonate
-and a 7-year-old are different patients and the resident must see which.
-
-## 14. Email behaviour, revised
+## 12. Email behaviour, revised
 
 Supersedes the confirmation email in the original sketch.
 
@@ -227,7 +181,7 @@ Consequence to be aware of: with no email at submit, a doctor who closes the tab
 any reply arrives has no link. Their route back in is the HN rejoin flow, which emails
 the link on request. That flow is therefore load-bearing, not a convenience.
 
-## 15. Consultee identity comes from SSO, never from the payload
+## 13. Consultee identity comes from SSO, never from the payload
 
 The host application authenticates the requesting doctor through SSO. This
 system takes the doctor's email from that server-side session.
